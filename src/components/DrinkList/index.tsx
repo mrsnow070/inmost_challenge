@@ -1,6 +1,6 @@
 import React, {FC, useMemo} from 'react';
 import {View, StyleSheet, Text, FlatList} from 'react-native';
-import Drink from '../../components/Drink';
+import Drink from '../Drink';
 import {DrinkType} from '../../redux/types';
 
 type Props = {

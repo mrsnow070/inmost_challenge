@@ -1,11 +1,4 @@
-import {
-  takeLatest,
-  fork,
-  all,
-  select,
-  put,
-  takeEvery,
-} from 'redux-saga/effects';
+import {takeLatest, fork, all, select, put} from 'redux-saga/effects';
 import * as categoriesActions from '../actions/categoriesActions';
 import {
   BOOTSTRAP_REQUEST,
@@ -15,6 +8,8 @@ import {
   SET_NEXT_PAGE,
   getSelectedCategories,
   getPage,
+  SET_SELECTED,
+  RESET_DRINKS_SECTIONS,
 } from '../reducer/categoryReducer';
 
 import axios from 'axios';
@@ -30,7 +25,7 @@ function* bootstrapRequest() {
 
     yield put(categoriesActions.bootstrapSuccess(data));
   } catch (err) {
-    console.log(err);
+    put({type: BOOTSTRAP_REQUEST_FAIL});
   }
 }
 
@@ -41,20 +36,26 @@ function* requestNextPage() {
 
   const lastPage: number = yield select((state) => getPage(state));
 
-  const {strCategory} = selected[lastPage];
+  if (selected.length > 0) {
+    const {strCategory} = selected[lastPage];
+    try {
+      const {data} = yield axios.get(
+        `https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${strCategory}`,
+      );
 
-  try {
-    const {data} = yield axios.get(
-      `https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${strCategory}`,
-    );
-
-    yield put({
-      type: SET_NEXT_PAGE,
-      payload: {strCategory, drinks: data.drinks},
-    });
-  } catch (err) {
-    console.log(err);
+      yield put({
+        type: SET_NEXT_PAGE,
+        payload: {strCategory, drinks: data.drinks},
+      });
+    } catch (err) {
+      put({type: BOOTSTRAP_REQUEST_FAIL});
+    }
   }
+}
+
+function* applySelection() {
+  yield put({type: RESET_DRINKS_SECTIONS});
+  yield put({type: GET_NEXT_PAGE});
 }
 
 function* bootstrapSuccess() {
@@ -70,7 +71,11 @@ function* bootstrapSuccessSaga() {
 }
 
 function* requestSelectedCategoriesSaga() {
-  yield takeEvery(GET_NEXT_PAGE, requestNextPage);
+  yield takeLatest(GET_NEXT_PAGE, requestNextPage);
+}
+
+function* applySelectedCategoriesSage() {
+  yield takeLatest(SET_SELECTED, applySelection);
 }
 
 export default function* () {
@@ -78,5 +83,6 @@ export default function* () {
     fork(bootstrapRequestSaga),
     fork(bootstrapSuccessSaga),
     fork(requestSelectedCategoriesSaga),
+    fork(applySelectedCategoriesSage),
   ]);
 }

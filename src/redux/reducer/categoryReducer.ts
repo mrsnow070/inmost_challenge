@@ -1,19 +1,20 @@
 import {AppState} from '../reducer/';
-import {Category, Action, DrinkType} from '../types';
+import {Category, Action, SelectedDrinkType} from '../types';
 
 export const moduleName = 'categories';
 export const BOOTSTRAP_REQUEST = `${moduleName}/BOOTSTRAP_REQUEST`;
 export const BOOTSTRAP_REQUEST_SUCCESS = `${moduleName}/BOOTSTRAP_REQUEST_SUCCESS`;
 export const BOOTSTRAP_REQUEST_FAIL = `${moduleName}/BOOTSTRAP_REQUEST_FAIL`;
 export const SET_SELECTED = `${moduleName}/SET_SELECTED`;
+export const RESET_DRINKS_SECTIONS = `${moduleName}/RESET_DRINKS_SECTIONS`;
 export const SET_NEXT_PAGE = `${moduleName}/SET_NEXT_PAGE`;
 export const GET_NEXT_PAGE = `${moduleName}/GET_NEXT_PAGE`;
 
 export type CategoriesInitStateType = {
-  categories: Category[][];
-  selected: Category[][];
+  categories: Category[];
+  selected: Category[];
   page: number;
-  drinkSections: {strCategory: string; drinks: DrinkType[]}[];
+  drinkSections: SelectedDrinkType;
 };
 
 const initState: CategoriesInitStateType = {
@@ -45,6 +46,19 @@ export default (state = initState, action: Action) => {
         drinkSections: state.drinkSections.concat(payload),
       };
 
+    case RESET_DRINKS_SECTIONS:
+      return {
+        ...state,
+        drinkSections: initState.drinkSections,
+        page: initState.page,
+      };
+
+    case SET_SELECTED:
+      return {
+        ...state,
+        selected: payload,
+      };
+
     default:
       return state;
   }
@@ -54,7 +68,7 @@ export default (state = initState, action: Action) => {
 export const getState = (state: AppState): CategoriesInitStateType =>
   state[moduleName];
 
-export const getSelectedCategories = (state: AppState): Category[][] =>
+export const getSelectedCategories = (state: AppState): Category[] =>
   getState(state).selected;
 
 export const getPage = (state: AppState): number => getState(state).page;
@@ -66,5 +80,8 @@ export const isIncrementAllowed = (state: AppState): boolean => {
   return getPage(state) < getSelectedCategories(state).length - 1;
 };
 
-export const getDrinkSections = (state: AppState): any =>
+export const getDrinkSections = (state: AppState): SelectedDrinkType =>
   getState(state).drinkSections;
+
+export const getCategories = (state: AppState): Category[] =>
+  getState(state).categories;

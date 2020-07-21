@@ -12,3 +12,5 @@ export type DrinkType = {
   strDrink: string;
   strDrinkThumb: string;
 };
+
+export type SelectedDrinkType = {strCategory: string; drinks: DrinkType[]}[];
