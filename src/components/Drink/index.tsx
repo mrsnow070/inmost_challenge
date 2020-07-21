@@ -1,22 +1,23 @@
-import React, {FC} from 'react';
+import React, {FC, useMemo} from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
 
 type Props = {
   title: string;
+  imgUrl: string;
 };
 
-const Drink: FC<Props> = ({title}) => {
-  return (
-    <View style={styles.container}>
-      <View style={styles.imgContainer}>
-        <Image
-          style={styles.img}
-          source={{uri: 'https://via.placeholder.com/100'}}
-        />
+const Drink: FC<Props> = ({title, imgUrl}) => {
+  const memoDrink = useMemo(() => {
+    return (
+      <View style={styles.container}>
+        <View style={styles.imgContainer}>
+          <Image style={styles.img} source={{uri: imgUrl}} />
+        </View>
+        <Text style={styles.titleText}>{title}</Text>
       </View>
-      <Text style={styles.titleText}>{title}</Text>
-    </View>
-  );
+    );
+  }, [imgUrl, title]);
+  return memoDrink;
 };
 
 const styles = StyleSheet.create({

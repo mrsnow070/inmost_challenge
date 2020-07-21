@@ -1,21 +1,30 @@
-import React, {FC} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import React, {FC, useMemo} from 'react';
+import {View, StyleSheet, Text, FlatList} from 'react-native';
 import Drink from '../../components/Drink';
+import {DrinkType} from '../../redux/types';
 
 type Props = {
   header: string;
+  drinks: DrinkType[];
 };
 
-const DrinkList: FC<Props> = ({header}) => {
-  return (
-    <View style={styles.container}>
-      <Text>{header}</Text>
-      <Drink title="title_1" />
-      <Drink title="title_2" />
-      <Drink title="title_3" />
-      <Drink title="title_4" />
-    </View>
-  );
+const DrinkList: FC<Props> = ({header, drinks}) => {
+  const memoDrinkList = useMemo(() => {
+    return (
+      <View style={styles.container}>
+        <Text>{header}</Text>
+        <FlatList
+          data={drinks}
+          keyExtractor={(item) => item.idDrink}
+          renderItem={({item}) => (
+            <Drink title={item.strDrink} imgUrl={item.strDrinkThumb} />
+          )}
+        />
+      </View>
+    );
+  }, [drinks, header]);
+
+  return memoDrinkList;
 };
 
 const styles = StyleSheet.create({

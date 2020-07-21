@@ -1,4 +1,6 @@
 import React, {FC} from 'react';
+import {useSelector} from 'react-redux';
+import {getSelectedCategories} from '../redux/reducer/categoryReducer';
 import {View, Text, StyleSheet} from 'react-native';
 
 type Props = {};
