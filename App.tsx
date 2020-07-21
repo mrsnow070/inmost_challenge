@@ -1,13 +1,14 @@
 import React from 'react';
 import {SafeAreaView, StatusBar} from 'react-native';
-
-declare const global: {HermesInternal: null | {}};
+import Counter from './src/components/Counter';
 
 const App = () => {
   return (
     <>
       <StatusBar barStyle="dark-content" />
-      <SafeAreaView></SafeAreaView>
+      <SafeAreaView>
+        <Counter />
+      </SafeAreaView>
     </>
   );
 };
